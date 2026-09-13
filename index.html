@@ -73,7 +73,7 @@
                     <h1 class="text-xs sm:text-base font-extrabold bg-gradient-to-r from-red-500 via-amber-400 to-emerald-400 bg-clip-text text-transparent leading-none">
                         VIETLOTT-LIVE-AI-GROK
                     </h1>
-                    <p class="text-[9px] sm:text-[10px] text-slate-400">Deep Learning & GitHub Data Engine</p>
+                    <p class="text-[9px] sm:text-[10px] text-slate-400">Deep Learning & Multi-Proxy Data Engine</p>
                 </div>
             </div>
             
@@ -114,7 +114,7 @@
                     <i data-lucide="brain-circuit" class="w-3 h-3 text-indigo-400"></i> Thuật toán AI Model
                 </label>
                 <select id="algo-type" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-1.5 text-xs font-medium text-slate-200 outline-none">
-                    <option value="ensemble" selected>SUPER ENSEMBLE GEMINI (DNN + LSTM + Markov)</option>
+                    <option value="ensemble" selected>SUPER ENSEMBLE (DNN + Markov)</option>
                     <option value="tf-dense">Deep Neural Network (DNN)</option>
                     <option value="markov-chain">Markov Chain Probability</option>
                 </select>
@@ -150,7 +150,7 @@
                     <h2 class="text-xs font-bold uppercase text-amber-400 flex items-center gap-1">
                         <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Dự đoán từ AI Grok
                     </h2>
-                    <span class="text-[9px] text-emerald-400 font-mono">GitHub Data Engine</span>
+                    <span class="text-[9px] text-emerald-400 font-mono">Multi-Proxy Engine</span>
                 </div>
                 <div id="predictions-container" class="space-y-1.5 overflow-y-auto custom-scrollbar flex-1 pr-1 max-h-[350px] md:max-h-none">
                     <div class="text-xs text-slate-400 italic text-center py-8 bg-slate-950/50 rounded-lg border border-slate-800">
@@ -162,8 +162,8 @@
             <div id="jackpot-meter-card" class="bg-slate-950 border border-slate-800 p-2.5 rounded-xl space-y-1.5 shrink-0">
                 <div class="flex justify-between items-center">
                     <div class="flex items-center gap-1">
-                        <i data-lucide="flame" id="meter-flame-icon" class="w-3.5 h-3.5 text-amber-500"></i>
-                        <span class="text-[10px] font-bold uppercase text-slate-300">Thước Đo Jackpot (AI Convergence Meter)</span>
+                        <i data-lucide="flame" class="w-3.5 h-3.5 text-amber-500"></i>
+                        <span class="text-[10px] font-bold uppercase text-slate-300">Thước Đo Jackpot (AI Convergence)</span>
                     </div>
                     <span id="alert-badge" class="px-2 py-0.5 rounded-full text-[8px] font-extrabold bg-slate-800 text-slate-400">ĐANG TÍNH...</span>
                 </div>
@@ -197,9 +197,7 @@
             <div class="p-3 space-y-3 overflow-y-auto custom-scrollbar flex-1">
                 <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800">
                     <h4 class="text-xs font-bold text-slate-300 mb-2">Biểu đồ tần suất xuất hiện số</h4>
-                    <div class="h-40 w-full">
-                        <canvas id="frequencyChart"></canvas>
-                    </div>
+                    <div class="h-40 w-full"><canvas id="frequencyChart"></canvas></div>
                 </div>
                 <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800">
                     <h4 class="text-xs font-bold text-slate-300 mb-2">Lịch sử kết quả</h4>
@@ -229,8 +227,15 @@
         let isTraining = false;
         let dataSource = 'unknown';
 
+        // ========== CẤU HÌNH ==========
         const REPO_RAW_BASE = "https://nguyenchemical.github.io/Vietlott-Live-AI-Grok/data/";
-        const LS_KEYS = { archive: 'vietlott_real_archive_v3' };
+        const OWN_PROXY = "https://grok.nguyenchemical.workers.dev/?url=";
+        const CORS_PROXIES = [
+            (url) => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
+            (url) => `https://proxy.cors.sh/${url}`,
+            (url) => `https://thingproxy.freeboard.io/fetch/${url}`
+        ];
+        const LS_KEYS = { archive: 'vietlott_grok_archive_v1' };
 
         function lsGet(key, fallback) {
             try { const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; }
@@ -256,8 +261,7 @@
         }
 
         tf.ready().then(async () => {
-            try { await tf.setBackend('webgl'); } 
-            catch (e) { await tf.setBackend('cpu'); }
+            try { await tf.setBackend('webgl'); } catch (e) { await tf.setBackend('cpu'); }
             document.getElementById('tf-backend').innerText = tf.getBackend().toUpperCase();
         });
 
@@ -267,8 +271,7 @@
         }
 
         function toggleStatsModal(show) {
-            const modal = document.getElementById('stats-modal');
-            modal.classList.toggle('hidden', !show);
+            document.getElementById('stats-modal').classList.toggle('hidden', !show);
             if (show) lucide.createIcons();
         }
 
@@ -290,13 +293,14 @@
         function setDataStatus(type, text) {
             const el = document.getElementById('data-status');
             if (!el) return;
-            const now = new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
-            
             if (type === 'github') {
-                el.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span><span>GitHub · ${text || now}</span>`;
+                el.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span><span>GitHub · ${text}</span>`;
+                el.className = "inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20";
+            } else if (type === 'live') {
+                el.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span><span>Live · ${text}</span>`;
                 el.className = "inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20";
             } else if (type === 'offline') {
-                el.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span><span>Offline · ${text || now}</span>`;
+                el.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span><span>Offline · ${text}</span>`;
                 el.className = "inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20";
             } else if (type === 'empty') {
                 el.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span><span>Chưa có dữ liệu</span>`;
@@ -317,47 +321,122 @@
             }
         }
 
-        // ========== ƯU TIÊN GITHUB DATA ==========
+        function parseVietlottResultHtml(html, gameType) {
+            if (html.includes("Just a moment") || html.includes("Chờ một chút") || html.includes("cf-browser-verification")) {
+                throw new Error("Cloudflare Challenge");
+            }
+            const anchorIdx = html.indexOf('day_so_ket_qua');
+            if (anchorIdx === -1) throw new Error("Không thấy khối kết quả");
+            const windowHtml = html.substring(anchorIdx, anchorIdx + 2200);
+
+            const ballMatches = [...windowHtml.matchAll(/bong_tron[^"]*">\s*(\d+)\s*</g)].map(m => m[1]);
+            if (ballMatches.length < 1) throw new Error("Không lấy được số");
+
+            let numbers;
+            if (gameType.startsWith('max3d')) {
+                const digits = ballMatches.join('');
+                const triplets = [];
+                for (let i = 0; i <= digits.length - 3; i += 3) triplets.push(digits.substring(i, i + 3));
+                numbers = gameType === 'max3d' ? triplets.slice(0, 1) : triplets.slice(0, 2);
+            } else {
+                numbers = ballMatches.map(n => parseInt(n, 10));
+            }
+
+            const idMatch = html.match(/[Kk]ỳ quay(?: thưởng)?\s*<b>#?(\d+)<\/b>\s*ngày\s*<b>([\d\/]+)<\/b>/);
+            const drawId = idMatch ? `#${idMatch[1]}` : '#0000';
+            const drawDate = idMatch ? idMatch[2] : new Date().toLocaleDateString('vi-VN');
+
+            let jackpot = null;
+            const jackpotMatch = html.match(/so_tien">\s*<h3>([\d.]+)<\/h3>/);
+            if (jackpotMatch) jackpot = parseInt(jackpotMatch[1].replace(/\./g, ''), 10);
+
+            return { id: drawId, date: drawDate, numbers, jackpot };
+        }
+
+        // ========== MULTI-PROXY FETCH ==========
         async function fetchRealVietlottData(gameType) {
             let draws = [];
             dataSource = 'unknown';
 
             // 1. Ưu tiên GitHub Pages
             try {
-                const res = await fetchWithTimeout(`${REPO_RAW_BASE}${gameType}.json?t=${Date.now()}`, {}, 6000);
+                const res = await fetchWithTimeout(`\( {REPO_RAW_BASE} \){gameType}.json?t=${Date.now()}`, {}, 5000);
                 if (res.ok) {
                     const data = await res.json();
                     if (Array.isArray(data) && data.length > 0) {
                         draws = data;
                         dataSource = 'github';
-                        logTrain(`<b class="text-emerald-400">[GitHub]</b> Tải ${data.length} kỳ từ data/${gameType}.json`);
-
-                        // Lưu vào local để dùng offline
+                        logTrain(`<b class="text-emerald-400">[GitHub]</b> Tải ${data.length} kỳ`);
                         const archive = lsGet(LS_KEYS.archive, {});
                         archive[gameType] = data;
                         lsSet(LS_KEYS.archive, archive);
-                    } else {
-                        logTrain(`<span class="text-amber-400">[GitHub]</span> File trống (0 kỳ)`);
                     }
                 }
-            } catch (e) {
-                logTrain(`<span class="text-slate-500">[GitHub]</span> ${e.message}`);
+            } catch (e) {}
+
+            // 2. Thử Live qua nhiều proxy
+            const VIETLOTT_PATHS = { 
+                'mega645': '645', 'power655': '655', 'lotto535': '535', 
+                'max3d': 'max-3d', 'max3dplus': 'max-3d', 'max3dpro': 'max-3dpro' 
+            };
+            const targetUrl = `https://vietlott.vn/vi/trung-thuong/ket-qua-trung-thuong/${VIETLOTT_PATHS[gameType] || '645'}`;
+
+            const proxyList = [
+                (url) => `\( {OWN_PROXY} \){encodeURIComponent(url)}`,
+                ...CORS_PROXIES
+            ];
+
+            for (const build of proxyList) {
+                try {
+                    const proxyUrl = build(targetUrl);
+                    const res = await fetchWithTimeout(proxyUrl, { cache: 'no-cache' }, 9000);
+                    if (!res.ok) continue;
+
+                    const contentType = res.headers.get('content-type') || '';
+                    let html = '';
+                    if (contentType.includes('application/json')) {
+                        const j = await res.json();
+                        if (j.error) continue;
+                        html = j.contents || j.data || '';
+                    } else {
+                        html = await res.text();
+                    }
+
+                    if (!html || html.length < 500) continue;
+
+                    const latest = parseVietlottResultHtml(html, gameType);
+                    logTrain(`<b class="text-emerald-400">[Live]</b> Kỳ \( {latest.id} ( \){latest.date})`);
+                    lastRealJackpotBillionVnd = latest.jackpot ? (latest.jackpot / 1e9) : null;
+                    dataSource = 'live';
+
+                    // Merge vào archive
+                    const archive = lsGet(LS_KEYS.archive, {});
+                    if (!archive[gameType]) archive[gameType] = [];
+                    if (!archive[gameType].some(d => d.id === latest.id)) {
+                        archive[gameType].unshift(latest);
+                        if (archive[gameType].length > 120) archive[gameType] = archive[gameType].slice(0, 120);
+                        lsSet(LS_KEYS.archive, archive);
+                    }
+                    draws = archive[gameType];
+                    break;
+                } catch (e) {
+                    // thử proxy tiếp theo
+                }
             }
 
-            // 2. Fallback localStorage
+            // 3. Fallback local
             if (draws.length === 0) {
                 const archive = lsGet(LS_KEYS.archive, {});
                 if (archive[gameType] && archive[gameType].length > 0) {
                     draws = archive[gameType];
                     dataSource = 'offline';
-                    logTrain(`<span class="text-amber-400">[Offline]</span> Dùng local (${draws.length} kỳ)`);
+                    logTrain(`<span class="text-amber-400">[Offline]</span> Local ${draws.length} kỳ`);
                 }
             }
 
-            // 3. Không có dữ liệu
             if (draws.length === 0) {
                 dataSource = 'empty';
-                logTrain(`<span class="text-slate-500">[Empty]</span> Chưa có dữ liệu. Chạy GitHub Actions để cập nhật.`);
+                logTrain(`<span class="text-slate-500">[Empty]</span> Chưa có dữ liệu`);
             }
 
             return draws;
@@ -365,25 +444,21 @@
 
         async function initApp() {
             cachedAIVectorProbabilities = null;
-            const gameType = document.getElementById('game-type').value;
-            await refreshLiveData(gameType);
+            await refreshLiveData(document.getElementById('game-type').value);
             renderAll();
         }
 
         async function refreshLiveData(gameType) {
             setDataStatus('loading');
+            clearTrainLog();
             try {
                 rawDraws = await fetchRealVietlottData(gameType);
-                
-                if (dataSource === 'github') {
-                    setDataStatus('github', `${rawDraws.length} kỳ`);
-                } else if (dataSource === 'offline') {
-                    setDataStatus('offline', `${rawDraws.length} kỳ`);
-                } else {
-                    setDataStatus('empty');
-                }
+                if (dataSource === 'github') setDataStatus('github', `${rawDraws.length} kỳ`);
+                else if (dataSource === 'live') setDataStatus('live', `${rawDraws.length} kỳ`);
+                else if (dataSource === 'offline') setDataStatus('offline', `${rawDraws.length} kỳ`);
+                else setDataStatus('empty');
             } catch (e) {
-                setDataStatus('offline', 'Lỗi');
+                setDataStatus('empty');
                 logTrain(`<span class="text-red-400">[Error]</span> ${e.message}`);
                 rawDraws = [];
             }
@@ -392,7 +467,6 @@
         async function manualRetryLiveData() {
             const btn = document.getElementById('btn-retry-live');
             btn.disabled = true;
-            clearTrainLog();
             await refreshLiveData(document.getElementById('game-type').value);
             renderAll();
             btn.disabled = false;
@@ -439,7 +513,6 @@
                 `;
                 tbody.appendChild(tr);
             });
-
             renderChart(getFrequencies(gameType), gameType);
             computeAndRenderJackpotMeter();
         }
@@ -452,15 +525,12 @@
             else if (gameType.startsWith('max3d')) maxNum = 9;
 
             for (let i = (gameType.startsWith('max3d') ? 0 : 1); i <= maxNum; i++) freqs[i] = 0;
-
             rawDraws.forEach(d => {
                 if (gameType.startsWith('max3d')) {
-                    d.numbers.forEach(s => {
-                        String(s).split('').forEach(ch => {
-                            const n = parseInt(ch, 10);
-                            if (freqs[n] !== undefined) freqs[n]++;
-                        });
-                    });
+                    d.numbers.forEach(s => String(s).split('').forEach(ch => {
+                        const n = parseInt(ch, 10);
+                        if (freqs[n] !== undefined) freqs[n]++;
+                    }));
                 } else {
                     const mains = d.numbers.slice(0, gameType === 'lotto535' ? 5 : 6);
                     mains.forEach(n => { if (freqs[n] !== undefined) freqs[n]++; });
@@ -472,7 +542,6 @@
         function renderChart(freqs, gameType) {
             const ctx = document.getElementById('frequencyChart').getContext('2d');
             if (chartInstance) chartInstance.destroy();
-            
             let barColor = '#ef4444';
             if (gameType === 'power655') barColor = '#d97706';
             else if (gameType === 'lotto535') barColor = '#16a34a';
@@ -482,13 +551,7 @@
                 type: 'bar',
                 data: {
                     labels: Object.keys(freqs),
-                    datasets: [{ 
-                        label: 'Tần suất', 
-                        data: Object.values(freqs), 
-                        backgroundColor: barColor + 'AA', 
-                        borderColor: barColor, 
-                        borderWidth: 1.5 
-                    }]
+                    datasets: [{ label: 'Tần suất', data: Object.values(freqs), backgroundColor: barColor + 'AA', borderColor: barColor, borderWidth: 1.5 }]
                 },
                 options: {
                     responsive: true, maintainAspectRatio: false,
@@ -522,34 +585,20 @@
 
             let sumDiff = 0;
             for (let i = 0; i < sortedP.length; i++) {
-                for (let j = 0; j < sortedP.length; j++) {
-                    sumDiff += Math.abs(sortedP[i] - sortedP[j]);
-                }
+                for (let j = 0; j < sortedP.length; j++) sumDiff += Math.abs(sortedP[i] - sortedP[j]);
             }
             const giniScore = sumDiff / (2 * sortedP.length * sortedP.length * (meanScore || 0.001));
             const concScore = Math.min(1, Math.max(0, giniScore));
+            const stabScore = Math.min(1, Math.min(rawDraws.length, 30) / 30);
+            const qualScore = rawDraws.length >= 5 ? 1.0 : 0.4;
 
-            const sampleSize = Math.min(rawDraws.length, 30);
-            const stabScore = Math.min(1, sampleSize / 30);
-            const isReal = rawDraws.length >= 5;
-            const qualScore = isReal ? 1.0 : 0.4;
-
-            const finalScore = (
-                meanScore * 0.20 +
-                top10Score * 0.25 +
-                sepScore * 0.15 +
-                concScore * 0.15 +
-                stabScore * 0.10 +
-                qualScore * 0.15
-            ) * 100;
-
+            const finalScore = (meanScore * 0.20 + top10Score * 0.25 + sepScore * 0.15 + concScore * 0.15 + stabScore * 0.10 + qualScore * 0.15) * 100;
             const meterScore = Math.min(99, Math.max(20, Math.round(finalScore)));
 
             document.getElementById('meter-bar').style.width = `${meterScore}%`;
             document.getElementById('meter-score-text').innerText = `${meterScore}%`;
             document.getElementById('jackpot-val-display').innerText = lastRealJackpotBillionVnd 
-                ? `${lastRealJackpotBillionVnd.toFixed(1)} Tỷ VNĐ` 
-                : "35.5 Tỷ VNĐ";
+                ? `${lastRealJackpotBillionVnd.toFixed(1)} Tỷ VNĐ` : "35.5 Tỷ VNĐ";
 
             const badge = document.getElementById('alert-badge');
             if (meterScore >= 80) {
@@ -564,7 +613,6 @@
             }
         }
 
-        // ========== TRAIN (KHÔNG TREO KHI DỮ LIỆU ÍT) ==========
         async function trainAndPredict() {
             if (isTraining) return;
             isTraining = true;
@@ -580,8 +628,7 @@
 
             if (rawDraws.length < 2) {
                 statusEl.innerText = "Thiếu dữ liệu";
-                logTrain(`<span class="text-amber-400">[Cảnh báo]</span> Cần ít nhất 2 kỳ để huấn luyện. Hiện có ${rawDraws.length} kỳ.`);
-                logTrain(`<span class="text-slate-400">Hãy chạy GitHub Actions để cập nhật dữ liệu.</span>`);
+                logTrain(`<span class="text-amber-400">[Cảnh báo]</span> Cần ≥ 2 kỳ. Hiện có ${rawDraws.length} kỳ.`);
                 btn.disabled = false;
                 isTraining = false;
                 return;
@@ -590,13 +637,12 @@
             let maxNum = 45;
             if (gameType === 'power655') maxNum = 55;
             else if (gameType === 'lotto535') maxNum = 35;
-            
             const isDigitGame = gameType.startsWith('max3d');
             const featureSize = isDigitGame ? 10 : maxNum;
 
-            statusEl.innerText = "Đang huấn luyện AI...";
+            statusEl.innerText = "Đang huấn luyện...";
             progressEl.style.width = '15%';
-            logTrain(`<b class="text-emerald-400">[TensorFlow AI]</b> Chạy <b>${algoType}</b> · ${rawDraws.length} kỳ`);
+            logTrain(`<b class="text-emerald-400">[AI]</b> ${algoType} · ${rawDraws.length} kỳ`);
 
             const chronological = [...rawDraws].reverse();
             const vectors = chronological.map(d => {
@@ -608,8 +654,7 @@
                     }));
                 } else {
                     const count = gameType === 'lotto535' ? 5 : 6;
-                    const mains = d.numbers.slice(0, count);
-                    mains.forEach(n => { if (n >= 1 && n <= maxNum) v[n - 1] = 1; });
+                    d.numbers.slice(0, count).forEach(n => { if (n >= 1 && n <= maxNum) v[n - 1] = 1; });
                 }
                 return v;
             });
@@ -625,14 +670,11 @@
                     model.add(tf.layers.dense({ units: 64, activation: 'relu', inputShape: [featureSize] }));
                     model.add(tf.layers.dense({ units: featureSize, activation: 'sigmoid' }));
                     model.compile({ optimizer: tf.train.adam(0.01), loss: 'binaryCrossentropy' });
-
                     await model.fit(xs, ys, { epochs: 8, batchSize: Math.min(8, vectors.length - 1), verbose: 0 });
-                    const densePred = model.predict(tf.tensor2d([vectors[vectors.length - 1]])).dataSync();
-                    for (let i = 0; i < featureSize; i++) predictionData[i] += densePred[i];
+                    const pred = model.predict(tf.tensor2d([vectors[vectors.length - 1]])).dataSync();
+                    for (let i = 0; i < featureSize; i++) predictionData[i] += pred[i];
                     xs.dispose(); ys.dispose(); model.dispose();
-                    logTrain(`<span class="text-indigo-400">[DNN]</span> Dense layer hoàn tất`);
-                } else {
-                    logTrain(`<span class="text-slate-500">[DNN]</span> Bỏ qua (dữ liệu quá ít)`);
+                    logTrain(`<span class="text-indigo-400">[DNN]</span> Xong`);
                 }
 
                 if (algoType === 'ensemble' || algoType === 'markov-chain') {
@@ -641,38 +683,37 @@
                     for (let i = 0; i < vectors.length - 1; i++) {
                         for (let a = 0; a < featureSize; a++) {
                             if (vectors[i][a] > 0) {
-                                for (let b = 0; b < featureSize; b++) transition[a][b] += vectors[i+1][b];
+                                for (let b = 0; b < featureSize; b++) transition[a][b] += vectors[i + 1][b];
                             }
                         }
                     }
                     const lastVec = vectors[vectors.length - 1];
                     for (let a = 0; a < featureSize; a++) {
                         if (lastVec[a] > 0) {
-                            for (let b = 0; b < featureSize; b++) predictionData[b] += (transition[a][b] * 0.15);
+                            for (let b = 0; b < featureSize; b++) predictionData[b] += transition[a][b] * 0.15;
                         }
                     }
-                    logTrain(`<span class="text-indigo-400">[Markov]</span> Transition matrix hoàn tất`);
+                    logTrain(`<span class="text-indigo-400">[Markov]</span> Xong`);
                 }
             } catch (e) {
                 logTrain(`<span class="text-red-400">[Error]</span> ${e.message}`);
             }
 
-            // Fallback frequency nếu prediction quá thấp
+            // Fallback frequency
             const freqs = getFrequencies(gameType);
             const totalFreq = Object.values(freqs).reduce((a, b) => a + b, 1);
             for (let i = 0; i < featureSize; i++) {
                 const f = freqs[isDigitGame ? i : i + 1] || 0;
-                predictionData[i] = Math.max(predictionData[i], f / totalFreq * 0.5);
+                predictionData[i] = Math.max(predictionData[i], f / totalFreq * 0.4);
             }
 
             cachedAIVectorProbabilities = predictionData;
             progressEl.style.width = '100%';
             statusEl.innerText = "Hoàn tất!";
-            logTrain(`<b class="text-emerald-400">[Thành công]</b> Đã tạo ${currentTicketCount} bộ số`);
+            logTrain(`<b class="text-emerald-400">[Thành công]</b> Tạo ${currentTicketCount} bộ số`);
 
             renderAIPredictions(predictionData, gameType, currentTicketCount, maxNum);
             computeAndRenderJackpotMeter();
-            
             if (typeof confetti === 'function') confetti({ particleCount: 40, spread: 50, origin: { y: 0.7 } });
             if (navigator.vibrate) navigator.vibrate(25);
 
@@ -683,7 +724,6 @@
         function renderAIPredictions(probabilities, gameType, count, maxNum) {
             const container = document.getElementById('predictions-container');
             container.innerHTML = '';
-
             const isDigitGame = gameType.startsWith('max3d');
             const candidates = probabilities.map((prob, idx) => ({
                 number: isDigitGame ? idx : idx + 1,
@@ -692,51 +732,44 @@
 
             for (let c = 0; c < count; c++) {
                 let selectedNumbers = [];
-
                 if (gameType === 'mega645' || gameType === 'power655') {
                     const sorted = [...candidates].sort((a, b) => b.prob - a.prob);
                     const pool = sorted.slice(0, Math.min(20, sorted.length));
                     const set = new Set();
                     let attempts = 0;
                     while (set.size < 6 && attempts < 100) {
-                        const chosen = weightedRandom(pool, x => x.prob * x.prob);
-                        set.add(chosen.number);
+                        set.add(weightedRandom(pool, x => x.prob * x.prob).number);
                         attempts++;
                     }
                     while (set.size < 6) set.add(getRandomInt(1, maxNum));
                     selectedNumbers = Array.from(set).sort((a, b) => a - b);
                     if (gameType === 'power655') selectedNumbers.push(getRandomInt(1, maxNum));
-                } 
-                else if (gameType === 'lotto535') {
+                } else if (gameType === 'lotto535') {
                     const sorted = [...candidates].sort((a, b) => b.prob - a.prob);
                     const pool = sorted.slice(0, 16);
                     const set = new Set();
                     while (set.size < 5) {
-                        const chosen = weightedRandom(pool, x => x.prob * x.prob);
-                        if (chosen.number >= 1 && chosen.number <= 35) set.add(chosen.number);
+                        const n = weightedRandom(pool, x => x.prob * x.prob).number;
+                        if (n >= 1 && n <= 35) set.add(n);
                     }
                     selectedNumbers = Array.from(set).sort((a, b) => a - b);
                     selectedNumbers.push(getRandomInt(1, 12));
-                }
-                else if (isDigitGame) {
-                    const makeTriplet = () => {
+                } else if (isDigitGame) {
+                    const make = () => {
                         let s = '';
-                        for (let k = 0; k < 3; k++) {
-                            const digit = weightedRandom(candidates, x => x.prob);
-                            s += digit.number;
-                        }
+                        for (let k = 0; k < 3; k++) s += weightedRandom(candidates, x => x.prob).number;
                         return s;
                     };
-                    selectedNumbers = gameType === 'max3d' ? [makeTriplet()] : [makeTriplet(), makeTriplet()];
+                    selectedNumbers = gameType === 'max3d' ? [make()] : [make(), make()];
                 }
 
-                const confidence = getRandomInt(86, 97);
+                const conf = getRandomInt(86, 97);
                 const card = document.createElement('div');
                 card.className = "bg-slate-950 border border-slate-700/80 p-2 rounded-xl flex items-center justify-between gap-2 shadow-md shrink-0";
                 card.innerHTML = `
                     <div class="flex flex-col items-start gap-1 shrink-0">
                         <span class="text-[10px] font-bold text-amber-400 bg-amber-400/10 px-1.5 py-0.5 rounded">Grok #${c + 1}</span>
-                        <span class="text-[8px] font-bold text-emerald-400 bg-emerald-400/10 px-1.5 py-0.5 rounded">AI ${confidence}%</span>
+                        <span class="text-[8px] font-bold text-emerald-400 bg-emerald-400/10 px-1.5 py-0.5 rounded">AI ${conf}%</span>
                     </div>
                     <div class="flex items-center overflow-x-auto py-0.5 flex-1">${renderBalls(selectedNumbers, gameType)}</div>
                 `;
