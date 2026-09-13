@@ -1,7 +1,3 @@
-// Script này chạy TỰ ĐỘNG trên máy chủ GitHub Actions. Vietlott.vn được bảo vệ bởi trang kiểm
-// tra chống-bot của Cloudflare (yêu cầu chạy JavaScript thật để xác nhận là trình duyệt thật),
-// nên không thể lấy dữ liệu bằng fetch() đơn thuần — phải dùng Playwright để mở 1 trình duyệt ẩn
-// (headless Chromium) thật sự, để nó tự vượt qua bài kiểm tra đó như người dùng bình thường.
 const { chromium } = require('playwright');
 const fs = require('fs');
 const path = require('path');
@@ -12,16 +8,16 @@ const GAMES = {
     lotto535: '535',
     max3d: 'max-3d',
     max3dpro: 'max-3dpro',
-    max3dplus: 'max-3d' // Vietlott không có trang riêng cho Max3D+, dùng chung trang Max 3D
+    max3dplus: 'max-3d'
 };
 
 function parseResultHtml(html, gameType) {
     const anchorIdx = html.indexOf('day_so_ket_qua');
-    if (anchorIdx === -1) throw new Error('Không tìm thấy khối kết quả trong trang (có thể vẫn đang ở trang kiểm tra chống-bot)');
-    const windowHtml = html.substring(anchorIdx, anchorIdx + 2000);
+    if (anchorIdx === -1) throw new Error('Không tìm thấy khối kết quả trong trang');
+    const windowHtml = html.substring(anchorIdx, anchorIdx + 2500);
 
     const ballMatches = [...windowHtml.matchAll(/bong_tron[^"]*">\s*(\d+)\s*</g)].map(m => m[1]);
-    if (ballMatches.length < 1) throw new Error('Không đọc được số kết quả từ trang');
+    if (ballMatches.length < 1) throw new Error('Không đọc được số kết quả');
 
     let numbers;
     if (gameType.startsWith('max3d')) {
@@ -34,30 +30,50 @@ function parseResultHtml(html, gameType) {
     }
 
     const idMatch = html.match(/[Kk]ỳ quay(?: thưởng)?\s*<b>#?(\d+)<\/b>\s*ngày\s*<b>([\d\/]+)<\/b>/);
-    if (!idMatch) throw new Error('Không đọc được mã kỳ quay / ngày quay');
+    if (!idMatch) throw new Error('Không đọc được mã kỳ quay / ngày');
 
     return { id: `#${idMatch[1]}`, date: idMatch[2], numbers };
 }
 
 async function fetchGame(browser, gameType, resultPath) {
     const targetUrl = `https://vietlott.vn/vi/trung-thuong/ket-qua-trung-thuong/${resultPath}`;
+    
     const context = await browser.newContext({
-        userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-        locale: 'vi-VN'
+        userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36',
+        locale: 'vi-VN',
+        viewport: { width: 1366, height: 768 },
+        extraHTTPHeaders: {
+            'Accept-Language': 'vi-VN,vi;q=0.9,en-US;q=0.8,en;q=0.7'
+        }
     });
+    
     const page = await context.newPage();
+    
     try {
-        await page.goto(targetUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
-        // Đợi thêm để trang kiểm tra chống-bot (nếu xuất hiện) tự chạy xong và chuyển sang trang thật
-        await page.waitForTimeout(8000);
+        await page.goto(targetUrl, { waitUntil: 'domcontentloaded', timeout: 45000 });
+
+        // Chờ challenge biến mất (tối đa 25 giây)
+        try {
+            await page.waitForFunction(
+                () => !document.title.includes('Chờ một chút') && !document.title.includes('Just a moment'),
+                { timeout: 25000 }
+            );
+        } catch (e) {
+            // Nếu vẫn còn challenge thì thử đợi thêm
+            await page.waitForTimeout(5000);
+        }
+
+        // Đợi thêm để trang kết quả load xong
+        await page.waitForTimeout(3000);
+
         const title = await page.title();
         const html = await page.content();
-        try {
-            return parseResultHtml(html, gameType);
-        } catch (parseErr) {
-            // Chẩn đoán: in ra tiêu đề trang + 200 ký tự đầu để biết chính xác trang đang ở trạng thái nào
-            throw new Error(`${parseErr.message} — Tiêu đề trang: "${title}" — Đầu trang: ${html.replace(/\s+/g, ' ').slice(0, 200)}`);
+
+        if (title.includes('Chờ một chút') || title.includes('Just a moment')) {
+            throw new Error(`Vẫn đang ở trang challenge — Title: "${title}"`);
         }
+
+        return parseResultHtml(html, gameType);
     } finally {
         await context.close();
     }
@@ -70,14 +86,18 @@ function mergeById(existing, newDraw) {
         const na = parseInt(String(a.id).replace(/\D/g, ''), 10) || 0;
         const nb = parseInt(String(b.id).replace(/\D/g, ''), 10) || 0;
         return nb - na;
-    }).slice(0, 200); // giữ tối đa 200 kỳ gần nhất mỗi loại hình
+    }).slice(0, 200);
 }
 
 async function main() {
     const dataDir = path.join(__dirname, '..', 'data');
     if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
 
-    const browser = await chromium.launch();
+    console.log('Khởi động Chromium...');
+    const browser = await chromium.launch({
+        headless: true,
+        args: ['--disable-blink-features=AutomationControlled', '--no-sandbox']
+    });
 
     for (const [gameType, resultPath] of Object.entries(GAMES)) {
         const filePath = path.join(dataDir, `${gameType}.json`);
@@ -87,19 +107,21 @@ async function main() {
         }
 
         try {
+            console.log(`Đang lấy ${gameType}...`);
             const draw = await fetchGame(browser, gameType, resultPath);
             const merged = mergeById(existing, draw);
             fs.writeFileSync(filePath, JSON.stringify(merged, null, 2), 'utf8');
-            console.log(`[OK] ${gameType}: kỳ mới nhất ${draw.id} (${draw.date}) — tổng ${merged.length} kỳ đang lưu`);
+            console.log(`[OK] ${gameType}: ${draw.id} (${draw.date}) — tổng ${merged.length} kỳ`);
         } catch (e) {
             console.warn(`[SKIP] ${gameType}: ${e.message}`);
         }
 
-        // Nghỉ giữa các lượt để không gây tải dồn dập lên vietlott.vn
-        await new Promise(r => setTimeout(r, 2000));
+        // Nghỉ giữa các game
+        await new Promise(r => setTimeout(r, 3000));
     }
 
     await browser.close();
+    console.log('Hoàn tất.');
 }
 
 main().catch(err => {
