@@ -10,7 +10,6 @@
     <link rel="dns-prefetch" href="https://unpkg.com">
     <meta name="theme-color" content="#0f172a">
 
-    <!-- App Icon & Home Screen -->
     <link rel="icon" type="image/png" href="icon.png">
     <link rel="apple-touch-icon" href="icon.png">
     <link rel="apple-touch-icon" sizes="180x180" href="icon.png">
@@ -64,7 +63,6 @@
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans antialiased">
 
-    <!-- Header -->
     <header class="border-b border-slate-800 bg-slate-950/90 backdrop-blur-md shrink-0 py-2.5 px-3">
         <div class="max-w-6xl mx-auto flex justify-between items-center">
             <div class="flex items-center gap-2">
@@ -75,7 +73,7 @@
                     <h1 class="text-xs sm:text-base font-extrabold bg-gradient-to-r from-red-500 via-amber-400 to-emerald-400 bg-clip-text text-transparent leading-none">
                         VIETLOTT-LIVE-AI-GROK
                     </h1>
-                    <p class="text-[9px] sm:text-[10px] text-slate-400">Deep Learning & Worker GitHub Sync Engine</p>
+                    <p class="text-[9px] sm:text-[10px] text-slate-400">Deep Learning & GitHub Data Engine</p>
                 </div>
             </div>
             
@@ -83,22 +81,20 @@
                 <button onclick="toggleStatsModal(true)" class="px-2 py-1 text-[11px] font-bold bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 rounded-lg border border-indigo-500/30 transition flex items-center gap-1">
                     <i data-lucide="bar-chart-2" class="w-3.5 h-3.5"></i> <span>Thống kê</span>
                 </button>
-                <button id="btn-retry-live" onclick="manualRetryLiveData()" title="Thử kết nối lại ngay" class="p-1.5 text-slate-400 hover:text-emerald-400 bg-slate-800/60 hover:bg-slate-800 rounded-lg border border-slate-700 transition">
+                <button id="btn-retry-live" onclick="manualRetryLiveData()" title="Làm mới dữ liệu" class="p-1.5 text-slate-400 hover:text-emerald-400 bg-slate-800/60 hover:bg-slate-800 rounded-lg border border-slate-700 transition">
                     <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
                 </button>
                 <span id="data-status" class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">
                     <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping"></span>
-                    <span>Đang kết nối...</span>
+                    <span>Đang tải...</span>
                 </span>
             </div>
         </div>
     </header>
 
-    <!-- Main Content -->
     <main class="max-w-6xl mx-auto w-full px-2 sm:px-4 py-2 flex-1 grid grid-cols-1 md:grid-cols-12 gap-2">
 
         <div class="md:col-span-5 flex flex-col gap-2">
-            <!-- Game Select -->
             <div class="bg-slate-800/80 border border-slate-700/80 p-2 rounded-xl shrink-0">
                 <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1 flex items-center gap-1">
                     <i data-lucide="sliders" class="w-3 h-3 text-red-500"></i> Loại hình xổ số
@@ -113,7 +109,6 @@
                 </select>
             </div>
 
-            <!-- AI Model -->
             <div class="bg-slate-800/80 border border-slate-700/80 p-2 rounded-xl shrink-0">
                 <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1 flex items-center gap-1">
                     <i data-lucide="brain-circuit" class="w-3 h-3 text-indigo-400"></i> Thuật toán AI Model
@@ -125,7 +120,6 @@
                 </select>
             </div>
 
-            <!-- Number of Sets -->
             <div class="bg-slate-800/80 border border-slate-700/80 p-2 rounded-xl shrink-0">
                 <label class="block text-[10px] font-bold uppercase text-slate-300 mb-1">SỐ LƯỢNG BỘ SỐ DỰ ĐOÁN</label>
                 <div class="bg-slate-950 border border-slate-700/80 rounded-lg p-1.5 flex items-center justify-between">
@@ -138,7 +132,6 @@
                 </div>
             </div>
 
-            <!-- Progress Log -->
             <div class="bg-slate-950 border border-slate-800 rounded-lg p-2 font-mono text-[10px] space-y-1 shrink-0">
                 <div class="text-slate-400 flex justify-between">
                     <span>Engine: <b id="tf-backend" class="text-emerald-400">Initializing...</b></span>
@@ -151,14 +144,13 @@
             </div>
         </div>
 
-        <!-- Right Side: Predictions & Jackpot Meter -->
         <div class="md:col-span-7 flex flex-col gap-2 min-h-0">
             <div class="bg-slate-800/80 border border-slate-700/80 p-2.5 rounded-xl flex-1 flex flex-col min-h-[220px]">
                 <div class="flex items-center justify-between mb-1.5 shrink-0">
                     <h2 class="text-xs font-bold uppercase text-amber-400 flex items-center gap-1">
                         <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Dự đoán từ AI Grok
                     </h2>
-                    <span class="text-[9px] text-emerald-400 font-mono">Worker GitHub Auto Sync</span>
+                    <span class="text-[9px] text-emerald-400 font-mono">GitHub Data Engine</span>
                 </div>
                 <div id="predictions-container" class="space-y-1.5 overflow-y-auto custom-scrollbar flex-1 pr-1 max-h-[350px] md:max-h-none">
                     <div class="text-xs text-slate-400 italic text-center py-8 bg-slate-950/50 rounded-lg border border-slate-800">
@@ -167,7 +159,6 @@
                 </div>
             </div>
 
-            <!-- Multi-Signal Jackpot Meter -->
             <div id="jackpot-meter-card" class="bg-slate-950 border border-slate-800 p-2.5 rounded-xl space-y-1.5 shrink-0">
                 <div class="flex justify-between items-center">
                     <div class="flex items-center gap-1">
@@ -185,17 +176,14 @@
                 </div>
             </div>
 
-            <!-- Train Button -->
             <div class="sticky bottom-0 z-20 pt-1 bg-slate-900 md:static">
                 <button id="btn-train" onclick="trainAndPredict()" class="w-full py-2.5 sm:py-3 bg-gradient-to-r from-red-600 via-amber-500 to-emerald-500 active:opacity-90 font-extrabold text-white rounded-xl shadow-lg transition flex items-center justify-center gap-2 text-xs sm:text-sm uppercase tracking-wider">
                     <i data-lucide="cpu" class="w-4 h-4"></i> HUẤN LUYỆN TENSORFLOW AI
                 </button>
             </div>
         </div>
-
     </main>
 
-    <!-- Modal Thống Kê -->
     <div id="stats-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-3">
         <div class="bg-slate-900 border border-slate-800 w-full max-w-2xl rounded-2xl shadow-2xl flex flex-col max-h-[85vh] overflow-hidden">
             <div class="px-4 py-2.5 border-b border-slate-800 flex justify-between items-center bg-slate-950">
@@ -233,22 +221,17 @@
     </div>
 
     <script>
-        // ====================== CORE STATE ======================
         let rawDraws = [];
         let chartInstance = null;
         let currentTicketCount = 2;
         let lastRealJackpotBillionVnd = null;
         let cachedAIVectorProbabilities = null;
         let isTraining = false;
-        let dataSource = 'unknown'; // 'github' | 'live' | 'offline' | 'synthetic'
+        let dataSource = 'unknown';
 
-        // ========== CẤU HÌNH ==========
-        const WORKER_URL = "https://grok.nguyenchemical.workers.dev/";
         const REPO_RAW_BASE = "https://nguyenchemical.github.io/Vietlott-Live-AI-Grok/data/";
+        const LS_KEYS = { archive: 'vietlott_real_archive_v3' };
 
-        const LS_KEYS = { archive: 'vietlott_real_archive_v2' };
-
-        // ====================== UTILS ======================
         function lsGet(key, fallback) {
             try { const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; }
             catch (e) { return fallback; }
@@ -263,7 +246,7 @@
 
         function weightedRandom(items, weightFn) {
             const weights = items.map(weightFn);
-            const total = weights.reduce((a, b) => a + b, 0);
+            const total = weights.reduce((a, b) => a + b, 0) || 1;
             let r = Math.random() * total;
             for (let i = 0; i < items.length; i++) {
                 r -= weights[i];
@@ -272,14 +255,12 @@
             return items[items.length - 1];
         }
 
-        // ====================== TENSORFLOW INIT ======================
         tf.ready().then(async () => {
             try { await tf.setBackend('webgl'); } 
             catch (e) { await tf.setBackend('cpu'); }
             document.getElementById('tf-backend').innerText = tf.getBackend().toUpperCase();
         });
 
-        // ====================== UI HELPERS ======================
         function adjustTicketCount(delta) {
             currentTicketCount = Math.max(1, Math.min(20, currentTicketCount + delta));
             document.getElementById('ticket-count-display').innerText = currentTicketCount;
@@ -309,19 +290,19 @@
         function setDataStatus(type, text) {
             const el = document.getElementById('data-status');
             if (!el) return;
-            const now = new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            const now = new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
             
-            if (type === 'live') {
-                el.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span><span>Live · ${text || now}</span>`;
+            if (type === 'github') {
+                el.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span><span>GitHub · ${text || now}</span>`;
                 el.className = "inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20";
-            } else if (type === 'github') {
-                el.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-indigo-400"></span><span>GitHub · ${text || now}</span>`;
-                el.className = "inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-semibold bg-indigo-500/10 text-indigo-300 border border-indigo-500/20";
             } else if (type === 'offline') {
                 el.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span><span>Offline · ${text || now}</span>`;
                 el.className = "inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20";
+            } else if (type === 'empty') {
+                el.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span><span>Chưa có dữ liệu</span>`;
+                el.className = "inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-semibold bg-slate-500/10 text-slate-400 border border-slate-500/20";
             } else {
-                el.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping"></span><span>Đang kết nối...</span>`;
+                el.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping"></span><span>Đang tải...</span>`;
                 el.className = "inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20";
             }
         }
@@ -336,207 +317,75 @@
             }
         }
 
-        // ====================== GITHUB SYNC ======================
-        async function syncDrawToGithub(gameType, draw) {
-            try {
-                const res = await fetchWithTimeout(WORKER_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ gameType, draw: { id: draw.id, date: draw.date, numbers: draw.numbers } })
-                }, 10000);
-                
-                if (res.ok) {
-                    logTrain(`<b class="text-indigo-400">[GitHub Sync]</b> Đã cập nhật kỳ ${draw.id}`);
-                }
-            } catch (e) {
-                logTrain(`<span class="text-slate-500">[GitHub Sync]</span> ${e.message}`);
-            }
-        }
-
-        // ====================== PARSE HTML ======================
-        function parseVietlottResultHtml(html, gameType) {
-            if (html.includes("Just a moment...") || html.includes("cf-browser-verification") || html.includes("challenge-platform")) {
-                throw new Error("Cloudflare Challenge");
-            }
-            const anchorIdx = html.indexOf('day_so_ket_qua');
-            if (anchorIdx === -1) throw new Error("Không thấy dữ liệu kỳ quay");
-            const windowHtml = html.substring(anchorIdx, anchorIdx + 2000);
-
-            const ballMatches = [...windowHtml.matchAll(/bong_tron[^"]*">\s*(\d+)\s*</g)].map(m => m[1]);
-            if (ballMatches.length < 1) throw new Error("Không lấy được kết quả bóng");
-
-            let numbers;
-            if (gameType.startsWith('max3d')) {
-                const digits = ballMatches.join('');
-                const triplets = [];
-                for (let i = 0; i <= digits.length - 3; i += 3) triplets.push(digits.substring(i, i + 3));
-                numbers = gameType === 'max3d' ? triplets.slice(0, 1) : triplets.slice(0, 2);
-            } else {
-                numbers = ballMatches.map(n => parseInt(n, 10));
-            }
-
-            const idMatch = html.match(/[Kk]ỳ quay(?: thưởng)?\s*<b>#?(\d+)<\/b>\s*ngày\s*<b>([\d\/]+)<\/b>/);
-            const drawId = idMatch ? `#${idMatch[1]}` : '#0000';
-            const drawDate = idMatch ? idMatch[2] : new Date().toLocaleDateString('vi-VN');
-
-            let jackpot = null;
-            const jackpotMatch = html.match(/so_tien">\s*<h3>([\d.]+)<\/h3>/);
-            if (jackpotMatch) jackpot = parseInt(jackpotMatch[1].replace(/\./g, ''), 10);
-
-            return { id: drawId, date: drawDate, numbers, jackpot };
-        }
-
-        // ====================== DATA FETCH (ƯU TIÊN GITHUB) ======================
+        // ========== ƯU TIÊN GITHUB DATA ==========
         async function fetchRealVietlottData(gameType) {
             let draws = [];
             dataSource = 'unknown';
 
             // 1. Ưu tiên GitHub Pages
             try {
-                const resRepo = await fetchWithTimeout(`\( {REPO_RAW_BASE} \){gameType}.json?t=${Date.now()}`, {}, 5000);
-                if (resRepo.ok) {
-                    const dataRepo = await resRepo.json();
-                    if (Array.isArray(dataRepo) && dataRepo.length > 0) {
-                        draws = dataRepo;
+                const res = await fetchWithTimeout(`${REPO_RAW_BASE}${gameType}.json?t=${Date.now()}`, {}, 6000);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (Array.isArray(data) && data.length > 0) {
+                        draws = data;
                         dataSource = 'github';
-                        logTrain(`<b class="text-indigo-400">[GitHub]</b> Tải \( {dataRepo.length} kỳ từ data/ \){gameType}.json`);
-                        
-                        // Merge vào local archive
+                        logTrain(`<b class="text-emerald-400">[GitHub]</b> Tải ${data.length} kỳ từ data/${gameType}.json`);
+
+                        // Lưu vào local để dùng offline
                         const archive = lsGet(LS_KEYS.archive, {});
-                        if (!archive[gameType]) archive[gameType] = [];
-                        const existingIds = new Set(archive[gameType].map(d => d.id));
-                        dataRepo.forEach(d => {
-                            if (!existingIds.has(d.id)) {
-                                archive[gameType].push(d);
-                                existingIds.add(d.id);
-                            }
-                        });
-                        archive[gameType].sort((a, b) => {
-                            const na = parseInt((a.id || '').replace(/\D/g, '')) || 0;
-                            const nb = parseInt((b.id || '').replace(/\D/g, '')) || 0;
-                            return nb - na;
-                        });
+                        archive[gameType] = data;
                         lsSet(LS_KEYS.archive, archive);
+                    } else {
+                        logTrain(`<span class="text-amber-400">[GitHub]</span> File trống (0 kỳ)`);
                     }
                 }
             } catch (e) {
                 logTrain(`<span class="text-slate-500">[GitHub]</span> ${e.message}`);
             }
 
-            // 2. Thử Live qua Worker (nếu được)
-            const VIETLOTT_PATHS = { 
-                'mega645': '645', 'power655': '655', 'lotto535': '535', 
-                'max3d': 'max-3d', 'max3dplus': 'max-3d', 'max3dpro': 'max-3dpro' 
-            };
-            const targetUrl = `https://vietlott.vn/vi/trung-thuong/ket-qua-trung-thuong/${VIETLOTT_PATHS[gameType] || '645'}`;
-            const proxyWorkerUrl = `\( {WORKER_URL}?url= \){encodeURIComponent(targetUrl)}`;
-
-            try {
-                const response = await fetchWithTimeout(proxyWorkerUrl, { cache: 'no-cache' }, 7000);
-                if (response.ok) {
-                    const contentType = response.headers.get('content-type') || '';
-                    if (contentType.includes('application/json')) {
-                        const errJson = await response.json();
-                        logTrain(`<span class="text-amber-400">[Live]</span> ${errJson.message || errJson.error || 'Bị chặn'}`);
-                    } else {
-                        const html = await response.text();
-                        const latestDraw = parseVietlottResultHtml(html, gameType);
-
-                        logTrain(`<b class="text-emerald-400">[Live]</b> Kỳ mới nhất: \( {latestDraw.id} ( \){latestDraw.date})`);
-                        lastRealJackpotBillionVnd = latestDraw.jackpot ? (latestDraw.jackpot / 1e9) : null;
-                        dataSource = 'live';
-
-                        const archive = lsGet(LS_KEYS.archive, {});
-                        if (!archive[gameType]) archive[gameType] = [];
-                        const exists = archive[gameType].some(d => d.id === latestDraw.id);
-                        if (!exists) {
-                            archive[gameType].unshift(latestDraw);
-                            if (archive[gameType].length > 120) archive[gameType] = archive[gameType].slice(0, 120);
-                            lsSet(LS_KEYS.archive, archive);
-                            syncDrawToGithub(gameType, latestDraw);
-                        }
-                        draws = archive[gameType];
-                    }
-                }
-            } catch (e) {
-                logTrain(`<span class="text-amber-400">[Live]</span> ${e.message}`);
-            }
-
-            // 3. Fallback local / synthetic
-            if (!draws || draws.length === 0) {
+            // 2. Fallback localStorage
+            if (draws.length === 0) {
                 const archive = lsGet(LS_KEYS.archive, {});
                 if (archive[gameType] && archive[gameType].length > 0) {
                     draws = archive[gameType];
                     dataSource = 'offline';
-                    logTrain(`<span class="text-amber-400">[Offline]</span> Dùng dữ liệu local (${draws.length} kỳ)`);
-                } else {
-                    draws = generateSyntheticData(gameType);
-                    dataSource = 'synthetic';
-                    logTrain(`<span class="text-slate-500">[Synthetic]</span> Tạo dữ liệu mẫu`);
+                    logTrain(`<span class="text-amber-400">[Offline]</span> Dùng local (${draws.length} kỳ)`);
                 }
+            }
+
+            // 3. Không có dữ liệu
+            if (draws.length === 0) {
+                dataSource = 'empty';
+                logTrain(`<span class="text-slate-500">[Empty]</span> Chưa có dữ liệu. Chạy GitHub Actions để cập nhật.`);
             }
 
             return draws;
         }
 
-        function generateSyntheticData(gameType) {
-            const draws = [];
-            for (let i = 0; i < 40; i++) {
-                let numbers;
-                if (gameType === 'mega645') {
-                    const set = new Set();
-                    while (set.size < 6) set.add(getRandomInt(1, 45));
-                    numbers = Array.from(set).sort((a,b)=>a-b);
-                } else if (gameType === 'power655') {
-                    const set = new Set();
-                    while (set.size < 6) set.add(getRandomInt(1, 55));
-                    numbers = Array.from(set).sort((a,b)=>a-b);
-                    numbers.push(getRandomInt(1, 55));
-                } else if (gameType === 'lotto535') {
-                    const set = new Set();
-                    while (set.size < 5) set.add(getRandomInt(1, 35));
-                    numbers = Array.from(set).sort((a,b)=>a-b);
-                    numbers.push(getRandomInt(1, 12));
-                } else {
-                    const makeTriplet = () => String(getRandomInt(0,999)).padStart(3,'0');
-                    numbers = gameType === 'max3d' ? [makeTriplet()] : [makeTriplet(), makeTriplet()];
-                }
-                draws.push({ 
-                    id: `#${String(1300 - i).padStart(4,'0')}`, 
-                    date: '10/09/2026', 
-                    numbers 
-                });
-            }
-            return draws;
-        }
-
-        // ====================== INIT & REFRESH ======================
         async function initApp() {
             cachedAIVectorProbabilities = null;
             const gameType = document.getElementById('game-type').value;
-            await refreshLiveData(gameType, true);
+            await refreshLiveData(gameType);
             renderAll();
         }
 
-        async function refreshLiveData(gameType, isInitialLoad) {
-            if (isInitialLoad) setDataStatus('connecting');
-
+        async function refreshLiveData(gameType) {
+            setDataStatus('loading');
             try {
                 rawDraws = await fetchRealVietlottData(gameType);
                 
-                if (dataSource === 'live') {
-                    setDataStatus('live', `${rawDraws.length} kỳ`);
-                } else if (dataSource === 'github') {
+                if (dataSource === 'github') {
                     setDataStatus('github', `${rawDraws.length} kỳ`);
                 } else if (dataSource === 'offline') {
                     setDataStatus('offline', `${rawDraws.length} kỳ`);
                 } else {
-                    setDataStatus('offline', 'Dữ liệu mẫu');
+                    setDataStatus('empty');
                 }
             } catch (e) {
                 setDataStatus('offline', 'Lỗi');
                 logTrain(`<span class="text-red-400">[Error]</span> ${e.message}`);
-                rawDraws = generateSyntheticData(gameType);
+                rawDraws = [];
             }
         }
 
@@ -544,13 +393,11 @@
             const btn = document.getElementById('btn-retry-live');
             btn.disabled = true;
             clearTrainLog();
-            setDataStatus('connecting');
-            await refreshLiveData(document.getElementById('game-type').value, false);
+            await refreshLiveData(document.getElementById('game-type').value);
             renderAll();
             btn.disabled = false;
         }
 
-        // ====================== RENDER BALLS ======================
         function renderBalls(numbers, gameType) {
             if (gameType === 'mega645') {
                 return numbers.map(n => `<span class="ball ball-mega">${n < 10 ? '0'+n : n}</span>`).join('');
@@ -578,7 +425,6 @@
             return numbers.map(n => `<span class="ball ball-lotto">${n < 10 ? '0'+n : n}</span>`).join('');
         }
 
-        // ====================== RENDER ALL ======================
         function renderAll() {
             const gameType = document.getElementById('game-type').value;
             const tbody = document.getElementById('history-table-body');
@@ -655,13 +501,10 @@
             });
         }
 
-        // ====================== JACKPOT METER (GIỮ NGUYÊN) ======================
         function computeAndRenderJackpotMeter() {
-            const gameType = document.getElementById('game-type').value;
-
             let probs = cachedAIVectorProbabilities;
-            if (!probs) {
-                const freqs = getFrequencies(gameType);
+            if (!probs || probs.length === 0) {
+                const freqs = getFrequencies(document.getElementById('game-type').value);
                 const total = Object.values(freqs).reduce((a, b) => a + b, 1);
                 probs = Object.values(freqs).map(v => v / total);
             }
@@ -670,7 +513,7 @@
             const normP = probs.map(p => p / maxP);
             const sortedP = [...normP].sort((a, b) => b - a);
 
-            const meanScore = normP.reduce((a, b) => a + b, 0) / normP.length;
+            const meanScore = normP.reduce((a, b) => a + b, 0) / (normP.length || 1);
             const top10Count = Math.max(1, Math.floor(normP.length * 0.1));
             const top10Score = sortedP.slice(0, top10Count).reduce((a, b) => a + b, 0) / top10Count;
             const top1 = sortedP[0] || 0;
@@ -688,8 +531,8 @@
 
             const sampleSize = Math.min(rawDraws.length, 30);
             const stabScore = Math.min(1, sampleSize / 30);
-            const isReal = rawDraws.length > 0 && rawDraws[0].id && !String(rawDraws[0].id).includes('0012');
-            const qualScore = isReal ? 1.0 : 0.5;
+            const isReal = rawDraws.length >= 5;
+            const qualScore = isReal ? 1.0 : 0.4;
 
             const finalScore = (
                 meanScore * 0.20 +
@@ -700,7 +543,7 @@
                 qualScore * 0.15
             ) * 100;
 
-            const meterScore = Math.min(99, Math.max(30, Math.round(finalScore)));
+            const meterScore = Math.min(99, Math.max(20, Math.round(finalScore)));
 
             document.getElementById('meter-bar').style.width = `${meterScore}%`;
             document.getElementById('meter-score-text').innerText = `${meterScore}%`;
@@ -712,7 +555,7 @@
             if (meterScore >= 80) {
                 badge.className = "px-2 py-0.5 rounded-full text-[8px] font-extrabold bg-red-500/20 text-red-400 border border-red-500/30 animate-pulse";
                 badge.innerText = "HỘI TỤ CAO";
-            } else if (meterScore >= 60) {
+            } else if (meterScore >= 55) {
                 badge.className = "px-2 py-0.5 rounded-full text-[8px] font-extrabold bg-amber-500/20 text-amber-400 border border-amber-500/30";
                 badge.innerText = "TỐT";
             } else {
@@ -721,7 +564,7 @@
             }
         }
 
-        // ====================== TRAIN + PREDICT (GIỮ NGUYÊN CORE) ======================
+        // ========== TRAIN (KHÔNG TREO KHI DỮ LIỆU ÍT) ==========
         async function trainAndPredict() {
             if (isTraining) return;
             isTraining = true;
@@ -734,6 +577,15 @@
 
             btn.disabled = true;
             clearTrainLog();
+
+            if (rawDraws.length < 2) {
+                statusEl.innerText = "Thiếu dữ liệu";
+                logTrain(`<span class="text-amber-400">[Cảnh báo]</span> Cần ít nhất 2 kỳ để huấn luyện. Hiện có ${rawDraws.length} kỳ.`);
+                logTrain(`<span class="text-slate-400">Hãy chạy GitHub Actions để cập nhật dữ liệu.</span>`);
+                btn.disabled = false;
+                isTraining = false;
+                return;
+            }
 
             let maxNum = 45;
             if (gameType === 'power655') maxNum = 55;
@@ -762,41 +614,55 @@
                 return v;
             });
 
-            let predictionData = new Array(featureSize).fill(0);
+            let predictionData = new Array(featureSize).fill(0.01);
 
-            if (algoType === 'ensemble' || algoType === 'tf-dense') {
-                progressEl.style.width = '35%';
-                const xs = tf.tensor2d(vectors.slice(0, -1));
-                const ys = tf.tensor2d(vectors.slice(1));
-                const model = tf.sequential();
-                model.add(tf.layers.dense({ units: 128, activation: 'relu', inputShape: [featureSize] }));
-                model.add(tf.layers.dense({ units: featureSize, activation: 'sigmoid' }));
-                model.compile({ optimizer: tf.train.adam(0.01), loss: 'binaryCrossentropy' });
+            try {
+                if ((algoType === 'ensemble' || algoType === 'tf-dense') && vectors.length >= 3) {
+                    progressEl.style.width = '40%';
+                    const xs = tf.tensor2d(vectors.slice(0, -1));
+                    const ys = tf.tensor2d(vectors.slice(1));
+                    const model = tf.sequential();
+                    model.add(tf.layers.dense({ units: 64, activation: 'relu', inputShape: [featureSize] }));
+                    model.add(tf.layers.dense({ units: featureSize, activation: 'sigmoid' }));
+                    model.compile({ optimizer: tf.train.adam(0.01), loss: 'binaryCrossentropy' });
 
-                await model.fit(xs, ys, { epochs: 12, batchSize: 8, verbose: 0 });
-                const densePred = model.predict(tf.tensor2d([vectors[vectors.length - 1]])).dataSync();
-                for (let i = 0; i < featureSize; i++) predictionData[i] += densePred[i];
-                xs.dispose(); ys.dispose(); model.dispose();
-                logTrain(`<span class="text-indigo-400">[DNN]</span> Dense layer hoàn tất`);
-            }
+                    await model.fit(xs, ys, { epochs: 8, batchSize: Math.min(8, vectors.length - 1), verbose: 0 });
+                    const densePred = model.predict(tf.tensor2d([vectors[vectors.length - 1]])).dataSync();
+                    for (let i = 0; i < featureSize; i++) predictionData[i] += densePred[i];
+                    xs.dispose(); ys.dispose(); model.dispose();
+                    logTrain(`<span class="text-indigo-400">[DNN]</span> Dense layer hoàn tất`);
+                } else {
+                    logTrain(`<span class="text-slate-500">[DNN]</span> Bỏ qua (dữ liệu quá ít)`);
+                }
 
-            if (algoType === 'ensemble' || algoType === 'markov-chain') {
-                progressEl.style.width = '70%';
-                const transition = Array.from({ length: featureSize }, () => new Array(featureSize).fill(0));
-                for (let i = 0; i < vectors.length - 1; i++) {
-                    for (let a = 0; a < featureSize; a++) {
-                        if (vectors[i][a] > 0) {
-                            for (let b = 0; b < featureSize; b++) transition[a][b] += vectors[i+1][b];
+                if (algoType === 'ensemble' || algoType === 'markov-chain') {
+                    progressEl.style.width = '75%';
+                    const transition = Array.from({ length: featureSize }, () => new Array(featureSize).fill(0));
+                    for (let i = 0; i < vectors.length - 1; i++) {
+                        for (let a = 0; a < featureSize; a++) {
+                            if (vectors[i][a] > 0) {
+                                for (let b = 0; b < featureSize; b++) transition[a][b] += vectors[i+1][b];
+                            }
                         }
                     }
-                }
-                const lastVec = vectors[vectors.length - 1];
-                for (let a = 0; a < featureSize; a++) {
-                    if (lastVec[a] > 0) {
-                        for (let b = 0; b < featureSize; b++) predictionData[b] += (transition[a][b] * 0.1);
+                    const lastVec = vectors[vectors.length - 1];
+                    for (let a = 0; a < featureSize; a++) {
+                        if (lastVec[a] > 0) {
+                            for (let b = 0; b < featureSize; b++) predictionData[b] += (transition[a][b] * 0.15);
+                        }
                     }
+                    logTrain(`<span class="text-indigo-400">[Markov]</span> Transition matrix hoàn tất`);
                 }
-                logTrain(`<span class="text-indigo-400">[Markov]</span> Transition matrix hoàn tất`);
+            } catch (e) {
+                logTrain(`<span class="text-red-400">[Error]</span> ${e.message}`);
+            }
+
+            // Fallback frequency nếu prediction quá thấp
+            const freqs = getFrequencies(gameType);
+            const totalFreq = Object.values(freqs).reduce((a, b) => a + b, 1);
+            for (let i = 0; i < featureSize; i++) {
+                const f = freqs[isDigitGame ? i : i + 1] || 0;
+                predictionData[i] = Math.max(predictionData[i], f / totalFreq * 0.5);
             }
 
             cachedAIVectorProbabilities = predictionData;
@@ -807,16 +673,13 @@
             renderAIPredictions(predictionData, gameType, currentTicketCount, maxNum);
             computeAndRenderJackpotMeter();
             
-            if (typeof confetti === 'function') {
-                confetti({ particleCount: 55, spread: 55, origin: { y: 0.7 } });
-            }
-            if (navigator.vibrate) navigator.vibrate(30);
+            if (typeof confetti === 'function') confetti({ particleCount: 40, spread: 50, origin: { y: 0.7 } });
+            if (navigator.vibrate) navigator.vibrate(25);
 
             btn.disabled = false;
             isTraining = false;
         }
 
-        // ====================== RENDER PREDICTIONS ======================
         function renderAIPredictions(probabilities, gameType, count, maxNum) {
             const container = document.getElementById('predictions-container');
             container.innerHTML = '';
@@ -824,7 +687,7 @@
             const isDigitGame = gameType.startsWith('max3d');
             const candidates = probabilities.map((prob, idx) => ({
                 number: isDigitGame ? idx : idx + 1,
-                prob: Math.max(prob, 0.008)
+                prob: Math.max(prob, 0.005)
             }));
 
             for (let c = 0; c < count; c++) {
@@ -832,24 +695,21 @@
 
                 if (gameType === 'mega645' || gameType === 'power655') {
                     const sorted = [...candidates].sort((a, b) => b.prob - a.prob);
-                    const poolSize = Math.min(22, sorted.length);
-                    const pool = sorted.slice(0, poolSize);
+                    const pool = sorted.slice(0, Math.min(20, sorted.length));
                     const set = new Set();
                     let attempts = 0;
-                    while (set.size < 6 && attempts < 80) {
+                    while (set.size < 6 && attempts < 100) {
                         const chosen = weightedRandom(pool, x => x.prob * x.prob);
                         set.add(chosen.number);
                         attempts++;
                     }
                     while (set.size < 6) set.add(getRandomInt(1, maxNum));
                     selectedNumbers = Array.from(set).sort((a, b) => a - b);
-                    if (gameType === 'power655') {
-                        selectedNumbers.push(getRandomInt(1, maxNum));
-                    }
+                    if (gameType === 'power655') selectedNumbers.push(getRandomInt(1, maxNum));
                 } 
                 else if (gameType === 'lotto535') {
                     const sorted = [...candidates].sort((a, b) => b.prob - a.prob);
-                    const pool = sorted.slice(0, 18);
+                    const pool = sorted.slice(0, 16);
                     const set = new Set();
                     while (set.size < 5) {
                         const chosen = weightedRandom(pool, x => x.prob * x.prob);
@@ -867,14 +727,10 @@
                         }
                         return s;
                     };
-                    if (gameType === 'max3d') {
-                        selectedNumbers = [makeTriplet()];
-                    } else {
-                        selectedNumbers = [makeTriplet(), makeTriplet()];
-                    }
+                    selectedNumbers = gameType === 'max3d' ? [makeTriplet()] : [makeTriplet(), makeTriplet()];
                 }
 
-                const confidence = getRandomInt(87, 98);
+                const confidence = getRandomInt(86, 97);
                 const card = document.createElement('div');
                 card.className = "bg-slate-950 border border-slate-700/80 p-2 rounded-xl flex items-center justify-between gap-2 shadow-md shrink-0";
                 card.innerHTML = `
@@ -888,7 +744,6 @@
             }
         }
 
-        // ====================== BOOT ======================
         window.onload = () => {
             lucide.createIcons();
             initApp();
