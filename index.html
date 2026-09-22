@@ -12,6 +12,9 @@
 
     <link rel="icon" type="image/png" href="icon.png">
     <link rel="apple-touch-icon" href="icon.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="icon.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="icon.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="icon.png">
     <link rel="apple-touch-icon" sizes="180x180" href="icon.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -39,6 +42,24 @@
         select:focus, button:focus { outline: none; }
         input, select, textarea { font-size: 16px; }
 
+        /* Logo lớn hơn rõ rệt */
+        .app-logo {
+            width: 48px; height: 48px;
+            border-radius: 12px;
+            object-fit: cover;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            border: 2px solid rgba(251, 191, 36, 0.3);
+        }
+        @media (min-width: 640px) {
+            .app-logo { width: 56px; height: 56px; border-radius: 14px; }
+        }
+        @media (min-width: 768px) {
+            .app-logo { width: 64px; height: 64px; border-radius: 16px; }
+        }
+        @media (min-width: 1024px) {
+            .app-logo { width: 72px; height: 72px; border-radius: 18px; }
+        }
+
         .ball {
             width: 34px; height: 34px; border-radius: 50%;
             display: inline-flex; align-items: center; justify-content: center;
@@ -59,32 +80,64 @@
         .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.6); }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+
+        /* App Password overlay */
+        #password-gate {
+            position: fixed; inset: 0; z-index: 9999;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(12px);
+            display: flex; align-items: center; justify-content: center;
+        }
+        #password-gate.hidden { display: none; }
     </style>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans antialiased">
 
-    <header class="border-b border-slate-800 bg-slate-950/90 backdrop-blur-md shrink-0 py-2.5 px-3">
-        <div class="max-w-6xl mx-auto flex justify-between items-center">
-            <div class="flex items-center gap-2">
-                <div class="p-1.5 bg-gradient-to-tr from-red-600 to-amber-500 rounded-lg text-white shadow-md flex items-center justify-center">
-                    <i data-lucide="cpu" class="w-4 h-4 sm:w-5 sm:h-5"></i>
+    <!-- ========== APP PASSWORD GATE ========== -->
+    <div id="password-gate">
+        <div class="bg-slate-900 border border-slate-700 rounded-2xl p-6 w-full max-w-xs mx-4 shadow-2xl">
+            <div class="flex flex-col items-center gap-3 mb-5">
+                <img src="icon.png" alt="Logo" class="w-20 h-20 rounded-2xl shadow-lg border-2 border-amber-500/30 object-cover">
+                <h2 class="text-lg font-extrabold bg-gradient-to-r from-red-500 via-amber-400 to-emerald-400 bg-clip-text text-transparent">
+                    Vietlott Live AI Grok
+                </h2>
+                <p class="text-xs text-slate-400 text-center">Nhập mật khẩu để mở app</p>
+            </div>
+            <input id="app-password-input" type="password" placeholder="Mật khẩu" 
+                class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-sm text-center text-amber-400 font-mono outline-none focus:border-amber-500 mb-3"
+                onkeydown="if(event.key==='Enter') checkAppPassword()">
+            <button onclick="checkAppPassword()" 
+                class="w-full py-3 bg-gradient-to-r from-red-600 via-amber-500 to-emerald-500 rounded-xl font-bold text-white text-sm uppercase tracking-wider">
+                Mở App
+            </button>
+            <p id="password-error" class="text-xs text-red-400 text-center mt-2 hidden">Sai mật khẩu</p>
+        </div>
+    </div>
+
+    <!-- ========== HEADER với Logo lớn ========== -->
+    <header class="border-b border-slate-800 bg-slate-950/95 backdrop-blur-md shrink-0 py-3 px-3 sm:px-4">
+        <div class="max-w-6xl mx-auto flex justify-between items-center gap-3">
+            <div class="flex items-center gap-3 min-w-0">
+                <!-- Logo lớn nằm trong khung Header -->
+                <div class="shrink-0 p-1 bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl border border-slate-700 shadow-lg">
+                    <img src="icon.png" alt="Vietlott AI Grok" class="app-logo">
                 </div>
-                <div>
-                    <h1 class="text-xs sm:text-base font-extrabold bg-gradient-to-r from-red-500 via-amber-400 to-emerald-400 bg-clip-text text-transparent leading-none">
+                <div class="min-w-0">
+                    <h1 class="text-sm sm:text-base md:text-lg font-extrabold bg-gradient-to-r from-red-500 via-amber-400 to-emerald-400 bg-clip-text text-transparent leading-tight truncate">
                         VIETLOTT-LIVE-AI-GROK
                     </h1>
-                    <p class="text-[9px] sm:text-[10px] text-slate-400">Deep Learning & Multi-Proxy Data Engine</p>
+                    <p class="text-[10px] sm:text-[11px] text-slate-400 truncate">Deep Learning & Multi-Proxy Data Engine</p>
                 </div>
             </div>
             
-            <div class="flex items-center gap-2">
-                <button onclick="toggleStatsModal(true)" class="px-2 py-1 text-[11px] font-bold bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 rounded-lg border border-indigo-500/30 transition flex items-center gap-1">
-                    <i data-lucide="bar-chart-2" class="w-3.5 h-3.5"></i> <span>Thống kê</span>
+            <div class="flex items-center gap-2 shrink-0">
+                <button onclick="toggleStatsModal(true)" class="px-2.5 py-1.5 text-[11px] font-bold bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 rounded-lg border border-indigo-500/30 transition flex items-center gap-1">
+                    <i data-lucide="bar-chart-2" class="w-3.5 h-3.5"></i> <span class="hidden sm:inline">Thống kê</span>
                 </button>
-                <button id="btn-retry-live" onclick="manualRetryLiveData()" title="Làm mới dữ liệu" class="p-1.5 text-slate-400 hover:text-emerald-400 bg-slate-800/60 hover:bg-slate-800 rounded-lg border border-slate-700 transition">
-                    <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                <button id="btn-retry-live" onclick="manualRetryLiveData()" title="Làm mới dữ liệu" class="p-2 text-slate-400 hover:text-emerald-400 bg-slate-800/60 hover:bg-slate-800 rounded-lg border border-slate-700 transition">
+                    <i data-lucide="refresh-cw" class="w-4 h-4"></i>
                 </button>
-                <span id="data-status" class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                <span id="data-status" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-[10px] font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">
                     <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping"></span>
                     <span>Đang tải...</span>
                 </span>
@@ -95,11 +148,11 @@
     <main class="max-w-6xl mx-auto w-full px-2 sm:px-4 py-2 flex-1 grid grid-cols-1 md:grid-cols-12 gap-2">
 
         <div class="md:col-span-5 flex flex-col gap-2">
-            <div class="bg-slate-800/80 border border-slate-700/80 p-2 rounded-xl shrink-0">
-                <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1 flex items-center gap-1">
-                    <i data-lucide="sliders" class="w-3 h-3 text-red-500"></i> Loại hình xổ số
+            <div class="bg-slate-800/80 border border-slate-700/80 p-2.5 rounded-xl shrink-0">
+                <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1.5 flex items-center gap-1">
+                    <i data-lucide="sliders" class="w-3.5 h-3.5 text-red-500"></i> Loại hình xổ số
                 </label>
-                <select id="game-type" onchange="initApp()" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-1.5 text-xs font-bold text-amber-400 outline-none">
+                <select id="game-type" onchange="initApp()" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-xs font-bold text-amber-400 outline-none">
                     <option value="mega645">Mega 6/45 (1 - 45)</option>
                     <option value="power655">Power 6/55 (1 - 55)</option>
                     <option value="lotto535">Lotto 5/35 (5 số 01-35 + 1 ĐB 01-12)</option>
@@ -109,30 +162,30 @@
                 </select>
             </div>
 
-            <div class="bg-slate-800/80 border border-slate-700/80 p-2 rounded-xl shrink-0">
-                <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1 flex items-center gap-1">
-                    <i data-lucide="brain-circuit" class="w-3 h-3 text-indigo-400"></i> Thuật toán AI Model
+            <div class="bg-slate-800/80 border border-slate-700/80 p-2.5 rounded-xl shrink-0">
+                <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1.5 flex items-center gap-1">
+                    <i data-lucide="brain-circuit" class="w-3.5 h-3.5 text-indigo-400"></i> Thuật toán AI Model
                 </label>
-                <select id="algo-type" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-1.5 text-xs font-medium text-slate-200 outline-none">
+                <select id="algo-type" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-xs font-medium text-slate-200 outline-none">
                     <option value="ensemble" selected>SUPER ENSEMBLE (DNN + Markov)</option>
                     <option value="tf-dense">Deep Neural Network (DNN)</option>
                     <option value="markov-chain">Markov Chain Probability</option>
                 </select>
             </div>
 
-            <div class="bg-slate-800/80 border border-slate-700/80 p-2 rounded-xl shrink-0">
-                <label class="block text-[10px] font-bold uppercase text-slate-300 mb-1">SỐ LƯỢNG BỘ SỐ DỰ ĐOÁN</label>
-                <div class="bg-slate-950 border border-slate-700/80 rounded-lg p-1.5 flex items-center justify-between">
+            <div class="bg-slate-800/80 border border-slate-700/80 p-2.5 rounded-xl shrink-0">
+                <label class="block text-[10px] font-bold uppercase text-slate-300 mb-1.5">SỐ LƯỢNG BỘ SỐ DỰ ĐOÁN</label>
+                <div class="bg-slate-950 border border-slate-700/80 rounded-lg p-2 flex items-center justify-between">
                     <span class="text-xs font-semibold text-slate-300 pl-1">Bộ số muốn tạo</span>
                     <div class="flex items-center gap-2">
-                        <button type="button" onclick="adjustTicketCount(-1)" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-amber-400 font-extrabold flex items-center justify-center transition">&minus;</button>
-                        <span id="ticket-count-display" class="w-5 text-center text-amber-400 font-extrabold text-sm font-mono">2</span>
-                        <button type="button" onclick="adjustTicketCount(1)" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-amber-400 font-extrabold flex items-center justify-center transition">&#43;</button>
+                        <button type="button" onclick="adjustTicketCount(-1)" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-amber-400 font-extrabold flex items-center justify-center transition text-lg">&minus;</button>
+                        <span id="ticket-count-display" class="w-6 text-center text-amber-400 font-extrabold text-base font-mono">2</span>
+                        <button type="button" onclick="adjustTicketCount(1)" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-amber-400 font-extrabold flex items-center justify-center transition text-lg">&#43;</button>
                     </div>
                 </div>
             </div>
 
-            <div class="bg-slate-950 border border-slate-800 rounded-lg p-2 font-mono text-[10px] space-y-1 shrink-0">
+            <div class="bg-slate-950 border border-slate-800 rounded-lg p-2.5 font-mono text-[10px] space-y-1.5 shrink-0">
                 <div class="text-slate-400 flex justify-between">
                     <span>Engine: <b id="tf-backend" class="text-emerald-400">Initializing...</b></span>
                     <span>Status: <b id="training-status" class="text-amber-400">Sẵn sàng</b></span>
@@ -140,29 +193,29 @@
                 <div class="w-full bg-slate-900 h-1.5 rounded-full overflow-hidden border border-slate-800">
                     <div id="training-progress" class="bg-gradient-to-r from-red-500 via-amber-400 to-emerald-500 h-full w-0 transition-all duration-150"></div>
                 </div>
-                <div id="training-log" class="h-14 overflow-y-auto custom-scrollbar leading-tight text-[9px] border-t border-slate-800/80 pt-1 mt-1"></div>
+                <div id="training-log" class="h-16 overflow-y-auto custom-scrollbar leading-tight text-[9px] border-t border-slate-800/80 pt-1.5 mt-1"></div>
             </div>
         </div>
 
         <div class="md:col-span-7 flex flex-col gap-2 min-h-0">
-            <div class="bg-slate-800/80 border border-slate-700/80 p-2.5 rounded-xl flex-1 flex flex-col min-h-[220px]">
-                <div class="flex items-center justify-between mb-1.5 shrink-0">
-                    <h2 class="text-xs font-bold uppercase text-amber-400 flex items-center gap-1">
-                        <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Dự đoán từ AI Grok
+            <div class="bg-slate-800/80 border border-slate-700/80 p-3 rounded-xl flex-1 flex flex-col min-h-[240px]">
+                <div class="flex items-center justify-between mb-2 shrink-0">
+                    <h2 class="text-xs font-bold uppercase text-amber-400 flex items-center gap-1.5">
+                        <i data-lucide="sparkles" class="w-4 h-4"></i> Dự đoán từ AI Grok
                     </h2>
                     <span class="text-[9px] text-emerald-400 font-mono">Multi-Proxy Engine</span>
                 </div>
-                <div id="predictions-container" class="space-y-1.5 overflow-y-auto custom-scrollbar flex-1 pr-1 max-h-[350px] md:max-h-none">
-                    <div class="text-xs text-slate-400 italic text-center py-8 bg-slate-950/50 rounded-lg border border-slate-800">
+                <div id="predictions-container" class="space-y-2 overflow-y-auto custom-scrollbar flex-1 pr-1 max-h-[380px] md:max-h-none">
+                    <div class="text-xs text-slate-400 italic text-center py-10 bg-slate-950/50 rounded-lg border border-slate-800">
                         Nhấn nút <b>"HUẤN LUYỆN TENSORFLOW AI"</b> bên dưới để bắt đầu.
                     </div>
                 </div>
             </div>
 
-            <div id="jackpot-meter-card" class="bg-slate-950 border border-slate-800 p-2.5 rounded-xl space-y-1.5 shrink-0">
+            <div id="jackpot-meter-card" class="bg-slate-950 border border-slate-800 p-3 rounded-xl space-y-2 shrink-0">
                 <div class="flex justify-between items-center">
-                    <div class="flex items-center gap-1">
-                        <i data-lucide="flame" class="w-3.5 h-3.5 text-amber-500"></i>
+                    <div class="flex items-center gap-1.5">
+                        <i data-lucide="flame" class="w-4 h-4 text-amber-500"></i>
                         <span class="text-[10px] font-bold uppercase text-slate-300">Thước Đo Jackpot (AI Convergence)</span>
                     </div>
                     <span id="alert-badge" class="px-2 py-0.5 rounded-full text-[8px] font-extrabold bg-slate-800 text-slate-400">ĐANG TÍNH...</span>
@@ -170,44 +223,45 @@
                 <div class="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden border border-slate-700">
                     <div id="meter-bar" class="h-full rounded-full transition-all duration-700 bg-gradient-to-r from-blue-500 via-amber-400 to-red-500" style="width: 0%;"></div>
                 </div>
-                <div class="grid grid-cols-2 gap-1 text-[9px] text-slate-400">
+                <div class="grid grid-cols-2 gap-1 text-[10px] text-slate-400">
                     <div>Độ hội tụ AI: <b id="meter-score-text" class="text-amber-400">0%</b></div>
                     <div class="text-right">Tích lũy ước tính: <b id="jackpot-val-display" class="text-slate-200">-- Tỷ VNĐ</b></div>
                 </div>
             </div>
 
             <div class="sticky bottom-0 z-20 pt-1 bg-slate-900 md:static">
-                <button id="btn-train" onclick="trainAndPredict()" class="w-full py-2.5 sm:py-3 bg-gradient-to-r from-red-600 via-amber-500 to-emerald-500 active:opacity-90 font-extrabold text-white rounded-xl shadow-lg transition flex items-center justify-center gap-2 text-xs sm:text-sm uppercase tracking-wider">
-                    <i data-lucide="cpu" class="w-4 h-4"></i> HUẤN LUYỆN TENSORFLOW AI
+                <button id="btn-train" onclick="trainAndPredict()" class="w-full py-3 sm:py-3.5 bg-gradient-to-r from-red-600 via-amber-500 to-emerald-500 active:opacity-90 font-extrabold text-white rounded-xl shadow-lg transition flex items-center justify-center gap-2 text-xs sm:text-sm uppercase tracking-wider">
+                    <i data-lucide="cpu" class="w-4.5 h-4.5"></i> HUẤN LUYỆN TENSORFLOW AI
                 </button>
             </div>
         </div>
     </main>
 
+    <!-- Stats Modal -->
     <div id="stats-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-3">
         <div class="bg-slate-900 border border-slate-800 w-full max-w-2xl rounded-2xl shadow-2xl flex flex-col max-h-[85vh] overflow-hidden">
-            <div class="px-4 py-2.5 border-b border-slate-800 flex justify-between items-center bg-slate-950">
-                <h3 class="text-xs sm:text-sm font-bold text-slate-100 flex items-center gap-2">
+            <div class="px-4 py-3 border-b border-slate-800 flex justify-between items-center bg-slate-950">
+                <h3 class="text-sm font-bold text-slate-100 flex items-center gap-2">
                     <i data-lucide="bar-chart-2" class="w-4 h-4 text-indigo-400"></i> Thống kê Lịch sử Kỳ quay
                 </h3>
-                <button onclick="toggleStatsModal(false)" class="p-1 text-slate-400 hover:text-slate-100 rounded-lg hover:bg-slate-800">
+                <button onclick="toggleStatsModal(false)" class="p-1.5 text-slate-400 hover:text-slate-100 rounded-lg hover:bg-slate-800">
                     <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
             </div>
             <div class="p-3 space-y-3 overflow-y-auto custom-scrollbar flex-1">
-                <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800">
+                <div class="bg-slate-950 p-3 rounded-xl border border-slate-800">
                     <h4 class="text-xs font-bold text-slate-300 mb-2">Biểu đồ tần suất xuất hiện số</h4>
-                    <div class="h-40 w-full"><canvas id="frequencyChart"></canvas></div>
+                    <div class="h-44 w-full"><canvas id="frequencyChart"></canvas></div>
                 </div>
-                <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800">
+                <div class="bg-slate-950 p-3 rounded-xl border border-slate-800">
                     <h4 class="text-xs font-bold text-slate-300 mb-2">Lịch sử kết quả</h4>
-                    <div class="overflow-x-auto max-h-40 custom-scrollbar">
+                    <div class="overflow-x-auto max-h-48 custom-scrollbar">
                         <table class="w-full text-xs text-left text-slate-300 min-w-[380px]">
                             <thead class="text-[10px] uppercase bg-slate-900 text-slate-400 sticky top-0">
                                 <tr>
-                                    <th class="px-2 py-1.5">Kỳ quay</th>
-                                    <th class="px-2 py-1.5">Ngày</th>
-                                    <th class="px-2 py-1.5">Kết quả quay thưởng</th>
+                                    <th class="px-2 py-2">Kỳ quay</th>
+                                    <th class="px-2 py-2">Ngày</th>
+                                    <th class="px-2 py-2">Kết quả quay thưởng</th>
                                 </tr>
                             </thead>
                             <tbody id="history-table-body" class="divide-y divide-slate-800"></tbody>
@@ -219,6 +273,30 @@
     </div>
 
     <script>
+        // ========== APP PASSWORD ==========
+        // Đổi mật khẩu tại đây
+        const APP_PASSWORD = "1234";
+
+        function checkAppPassword() {
+            const input = document.getElementById('app-password-input');
+            const err = document.getElementById('password-error');
+            if (input.value === APP_PASSWORD) {
+                document.getElementById('password-gate').classList.add('hidden');
+                sessionStorage.setItem('vietlott_grok_unlocked', '1');
+                initApp();
+            } else {
+                err.classList.remove('hidden');
+                input.value = '';
+                input.focus();
+            }
+        }
+
+        // Nếu đã mở trong session thì bỏ qua password
+        if (sessionStorage.getItem('vietlott_grok_unlocked') === '1') {
+            document.getElementById('password-gate').classList.add('hidden');
+        }
+
+        // ========== APP LOGIC ==========
         let rawDraws = [];
         let chartInstance = null;
         let currentTicketCount = 2;
@@ -227,7 +305,6 @@
         let isTraining = false;
         let dataSource = 'unknown';
 
-        // ========== CẤU HÌNH ==========
         const REPO_RAW_BASE = "https://nguyenchemical.github.io/Vietlott-Live-AI-Grok/data/";
         const OWN_PROXY = "https://grok.nguyenchemical.workers.dev/?url=";
         const CORS_PROXIES = [
@@ -235,7 +312,7 @@
             (url) => `https://proxy.cors.sh/${url}`,
             (url) => `https://thingproxy.freeboard.io/fetch/${url}`
         ];
-        const LS_KEYS = { archive: 'vietlott_grok_archive_v1' };
+        const LS_KEYS = { archive: 'vietlott_grok_archive_v2' };
 
         function lsGet(key, fallback) {
             try { const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; }
@@ -295,19 +372,19 @@
             if (!el) return;
             if (type === 'github') {
                 el.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span><span>GitHub · ${text}</span>`;
-                el.className = "inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20";
+                el.className = "inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20";
             } else if (type === 'live') {
                 el.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span><span>Live · ${text}</span>`;
-                el.className = "inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20";
+                el.className = "inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20";
             } else if (type === 'offline') {
                 el.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span><span>Offline · ${text}</span>`;
-                el.className = "inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20";
+                el.className = "inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-[10px] font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20";
             } else if (type === 'empty') {
                 el.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span><span>Chưa có dữ liệu</span>`;
-                el.className = "inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-semibold bg-slate-500/10 text-slate-400 border border-slate-500/20";
+                el.className = "inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-[10px] font-semibold bg-slate-500/10 text-slate-400 border border-slate-500/20";
             } else {
                 el.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping"></span><span>Đang tải...</span>`;
-                el.className = "inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20";
+                el.className = "inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-[10px] font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20";
             }
         }
 
@@ -353,14 +430,13 @@
             return { id: drawId, date: drawDate, numbers, jackpot };
         }
 
-        // ========== MULTI-PROXY FETCH ==========
         async function fetchRealVietlottData(gameType) {
             let draws = [];
             dataSource = 'unknown';
 
-            // 1. Ưu tiên GitHub Pages
+            // 1. GitHub ưu tiên
             try {
-                const res = await fetchWithTimeout(`\( {REPO_RAW_BASE} \){gameType}.json?t=${Date.now()}`, {}, 5000);
+                const res = await fetchWithTimeout(`${REPO_RAW_BASE}${gameType}.json?t=${Date.now()}`, {}, 5000);
                 if (res.ok) {
                     const data = await res.json();
                     if (Array.isArray(data) && data.length > 0) {
@@ -374,15 +450,14 @@
                 }
             } catch (e) {}
 
-            // 2. Thử Live qua nhiều proxy
+            // 2. Live multi-proxy
             const VIETLOTT_PATHS = { 
                 'mega645': '645', 'power655': '655', 'lotto535': '535', 
                 'max3d': 'max-3d', 'max3dplus': 'max-3d', 'max3dpro': 'max-3dpro' 
             };
             const targetUrl = `https://vietlott.vn/vi/trung-thuong/ket-qua-trung-thuong/${VIETLOTT_PATHS[gameType] || '645'}`;
-
             const proxyList = [
-                (url) => `\( {OWN_PROXY} \){encodeURIComponent(url)}`,
+                (url) => `${OWN_PROXY}${encodeURIComponent(url)}`,
                 ...CORS_PROXIES
             ];
 
@@ -391,7 +466,6 @@
                     const proxyUrl = build(targetUrl);
                     const res = await fetchWithTimeout(proxyUrl, { cache: 'no-cache' }, 9000);
                     if (!res.ok) continue;
-
                     const contentType = res.headers.get('content-type') || '';
                     let html = '';
                     if (contentType.includes('application/json')) {
@@ -401,15 +475,13 @@
                     } else {
                         html = await res.text();
                     }
-
                     if (!html || html.length < 500) continue;
 
                     const latest = parseVietlottResultHtml(html, gameType);
-                    logTrain(`<b class="text-emerald-400">[Live]</b> Kỳ \( {latest.id} ( \){latest.date})`);
+                    logTrain(`<b class="text-emerald-400">[Live]</b> Kỳ ${latest.id} (${latest.date})`);
                     lastRealJackpotBillionVnd = latest.jackpot ? (latest.jackpot / 1e9) : null;
                     dataSource = 'live';
 
-                    // Merge vào archive
                     const archive = lsGet(LS_KEYS.archive, {});
                     if (!archive[gameType]) archive[gameType] = [];
                     if (!archive[gameType].some(d => d.id === latest.id)) {
@@ -419,12 +491,10 @@
                     }
                     draws = archive[gameType];
                     break;
-                } catch (e) {
-                    // thử proxy tiếp theo
-                }
+                } catch (e) {}
             }
 
-            // 3. Fallback local
+            // 3. Offline
             if (draws.length === 0) {
                 const archive = lsGet(LS_KEYS.archive, {});
                 if (archive[gameType] && archive[gameType].length > 0) {
@@ -438,11 +508,11 @@
                 dataSource = 'empty';
                 logTrain(`<span class="text-slate-500">[Empty]</span> Chưa có dữ liệu`);
             }
-
             return draws;
         }
 
         async function initApp() {
+            if (document.getElementById('password-gate') && !document.getElementById('password-gate').classList.contains('hidden')) return;
             cachedAIVectorProbabilities = null;
             await refreshLiveData(document.getElementById('game-type').value);
             renderAll();
@@ -523,7 +593,6 @@
             if (gameType === 'power655') maxNum = 55;
             else if (gameType === 'lotto535') maxNum = 35;
             else if (gameType.startsWith('max3d')) maxNum = 9;
-
             for (let i = (gameType.startsWith('max3d') ? 0 : 1); i <= maxNum; i++) freqs[i] = 0;
             rawDraws.forEach(d => {
                 if (gameType.startsWith('max3d')) {
@@ -546,7 +615,6 @@
             if (gameType === 'power655') barColor = '#d97706';
             else if (gameType === 'lotto535') barColor = '#16a34a';
             else if (gameType.startsWith('max3d')) barColor = '#c026d3';
-
             chartInstance = new Chart(ctx, {
                 type: 'bar',
                 data: {
@@ -571,18 +639,15 @@
                 const total = Object.values(freqs).reduce((a, b) => a + b, 1);
                 probs = Object.values(freqs).map(v => v / total);
             }
-
             const maxP = Math.max(...probs) || 1;
             const normP = probs.map(p => p / maxP);
             const sortedP = [...normP].sort((a, b) => b - a);
-
             const meanScore = normP.reduce((a, b) => a + b, 0) / (normP.length || 1);
             const top10Count = Math.max(1, Math.floor(normP.length * 0.1));
             const top10Score = sortedP.slice(0, top10Count).reduce((a, b) => a + b, 0) / top10Count;
             const top1 = sortedP[0] || 0;
             const topK = sortedP[Math.min(6, sortedP.length - 1)] || 0;
             const sepScore = Math.min(1, Math.max(0, (top1 - topK) * 2.5));
-
             let sumDiff = 0;
             for (let i = 0; i < sortedP.length; i++) {
                 for (let j = 0; j < sortedP.length; j++) sumDiff += Math.abs(sortedP[i] - sortedP[j]);
@@ -591,15 +656,12 @@
             const concScore = Math.min(1, Math.max(0, giniScore));
             const stabScore = Math.min(1, Math.min(rawDraws.length, 30) / 30);
             const qualScore = rawDraws.length >= 5 ? 1.0 : 0.4;
-
             const finalScore = (meanScore * 0.20 + top10Score * 0.25 + sepScore * 0.15 + concScore * 0.15 + stabScore * 0.10 + qualScore * 0.15) * 100;
             const meterScore = Math.min(99, Math.max(20, Math.round(finalScore)));
-
             document.getElementById('meter-bar').style.width = `${meterScore}%`;
             document.getElementById('meter-score-text').innerText = `${meterScore}%`;
             document.getElementById('jackpot-val-display').innerText = lastRealJackpotBillionVnd 
                 ? `${lastRealJackpotBillionVnd.toFixed(1)} Tỷ VNĐ` : "35.5 Tỷ VNĐ";
-
             const badge = document.getElementById('alert-badge');
             if (meterScore >= 80) {
                 badge.className = "px-2 py-0.5 rounded-full text-[8px] font-extrabold bg-red-500/20 text-red-400 border border-red-500/30 animate-pulse";
@@ -616,13 +678,11 @@
         async function trainAndPredict() {
             if (isTraining) return;
             isTraining = true;
-
             const btn = document.getElementById('btn-train');
             const statusEl = document.getElementById('training-status');
             const progressEl = document.getElementById('training-progress');
             const gameType = document.getElementById('game-type').value;
             const algoType = document.getElementById('algo-type').value;
-
             btn.disabled = true;
             clearTrainLog();
 
@@ -676,7 +736,6 @@
                     xs.dispose(); ys.dispose(); model.dispose();
                     logTrain(`<span class="text-indigo-400">[DNN]</span> Xong`);
                 }
-
                 if (algoType === 'ensemble' || algoType === 'markov-chain') {
                     progressEl.style.width = '75%';
                     const transition = Array.from({ length: featureSize }, () => new Array(featureSize).fill(0));
@@ -699,7 +758,6 @@
                 logTrain(`<span class="text-red-400">[Error]</span> ${e.message}`);
             }
 
-            // Fallback frequency
             const freqs = getFrequencies(gameType);
             const totalFreq = Object.values(freqs).reduce((a, b) => a + b, 1);
             for (let i = 0; i < featureSize; i++) {
@@ -765,7 +823,7 @@
 
                 const conf = getRandomInt(86, 97);
                 const card = document.createElement('div');
-                card.className = "bg-slate-950 border border-slate-700/80 p-2 rounded-xl flex items-center justify-between gap-2 shadow-md shrink-0";
+                card.className = "bg-slate-950 border border-slate-700/80 p-2.5 rounded-xl flex items-center justify-between gap-2 shadow-md shrink-0";
                 card.innerHTML = `
                     <div class="flex flex-col items-start gap-1 shrink-0">
                         <span class="text-[10px] font-bold text-amber-400 bg-amber-400/10 px-1.5 py-0.5 rounded">Grok #${c + 1}</span>
@@ -779,7 +837,9 @@
 
         window.onload = () => {
             lucide.createIcons();
-            initApp();
+            if (sessionStorage.getItem('vietlott_grok_unlocked') === '1') {
+                initApp();
+            }
         };
     </script>
 </body>
